@@ -1,0 +1,158 @@
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+const digitVariants = {
+    enter: (direction) => ({
+        opacity: 0,
+        rotateX: direction > 0 ? -88 : 88,
+        y: direction > 0 ? "88%" : "-88%",
+        filter: "blur(2px)",
+    }),
+    center: {
+        opacity: 1,
+        rotateX: 0,
+        y: "0%",
+        filter: "blur(0px)",
+    },
+    exit: (direction) => ({
+        opacity: 0,
+        rotateX: direction > 0 ? 88 : -88,
+        y: direction > 0 ? "-88%" : "88%",
+        filter: "blur(2px)",
+    }),
+};
+
+const formatUsers = (value: number) =>
+    new Intl.NumberFormat("en-US").format(value);
+
+export const LiveUsersNow = ({ users }) => {
+    const previousUsers = useRef(users);
+    const [direction, setDirection] = useState < Direction > (1);
+
+    useEffect(() => {
+        if (users === previousUsers.current) {
+            return;
+        }
+
+        setDirection(users > previousUsers.current ? 1 : -1);
+        previousUsers.current = users;
+    }, [users]);
+
+    const formattedUsers = useMemo(() => formatUsers(users), [users]);
+    const characters = useMemo(
+        () => Array.from(formattedUsers),
+        [formattedUsers]
+    );
+
+    return (
+        <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center sm:flex-nowrap">
+            <span className="relative flex h-2.5 w-2.5 shrink-0">
+                <span className="absolute inset-0 rounded-full bg-green-500 opacity-35 animate-ping" />
+                <span className="relative h-2.5 w-2.5 rounded-full bg-green-500" />
+            </span>
+
+            <span className="text-[clamp(1rem,1.25vw,1.25rem)] font-semibold tracking-[-0.04em] text-[#14213d]">
+                Live users now:
+            </span>
+
+            <span
+                className="inline-flex font-mono items-center text-[clamp(1rem,1.25vw,1.25rem)] font-medium tracking-[-0.04em] text-[#6b7c9f]"
+                aria-label={`Live users ${formattedUsers}`}
+            >
+                <span
+                    aria-hidden="true"
+                    className="flex items-center [font-variant-numeric:tabular-nums]"
+                >
+                    {characters.map((character, index) => (
+                        <DigitColumn
+                            key={`${index}-${character === "," ? "comma" : "digit"}`}
+                            character={character}
+                            index={index}
+                            direction={direction}
+                        />
+                    ))}
+                </span>
+            </span>
+        </div>
+    );
+};
+
+const DigitColumn = ({ character, direction, index }) => {
+    const isComma = character === ",";
+
+    return (
+        <motion.span
+            initial={{
+                opacity: 0,
+                rotateX: -56,
+                y: "52%",
+            }}
+            animate={{
+                opacity: 1,
+                rotateX: 0,
+                y: "0%",
+            }}
+            transition={{
+                delay: 0.08 + index * 0.035,
+                duration: 0.32,
+                ease: [0.22, 1, 0.36, 1],
+            }}
+            className="relative inline-flex h-[1em] overflow-hidden align-baseline"
+            style={{
+                perspective: 360,
+                width: isComma ? "0.28em" : "0.66em",
+            }}
+        >
+            <AnimatePresence initial={false} mode="popLayout" custom={direction}>
+                <motion.span
+                    key={character}
+                    custom={direction}
+                    variants={digitVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    transition={{
+                        duration: 0.28,
+                        delay: index * 0.014,
+                        ease: "easeInOut",
+                    }}
+                    className="absolute inset-0 flex items-center justify-center"
+                >
+                    {character}
+                </motion.span>
+            </AnimatePresence>
+        </motion.span>
+    );
+};
+
+const MIN_USERS = 184120;
+const MAX_USERS = 184390;
+const INITIAL_USERS = 184263;
+const UPDATE_INTERVAL_MS = 1800;
+
+const clamp = (value: number, min: number, max: number) =>
+    Math.min(Math.max(value, min), max);
+
+const Example = () => {
+    const [users, setUsers] = useState(INITIAL_USERS);
+
+    useEffect(() => {
+        const interval = window.setInterval(() => {
+            const nextDirection = Math.random() > 0.34 ? 1 : -1;
+            const magnitude = Math.floor(Math.random() * 18) + 3;
+            const delta = nextDirection * magnitude;
+
+            setUsers((current) => clamp(current + delta, MIN_USERS, MAX_USERS));
+        }, UPDATE_INTERVAL_MS);
+
+        return () => window.clearInterval(interval);
+    }, []);
+
+    return (
+        <section className="grid h-32 place-items-center bg-white px-6">
+            <LiveUsersNow users={users} />
+        </section>
+    );
+};
+
+export default Example;

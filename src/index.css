@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-paper text-ink font-body antialiased;
+    /* Mottled warm-paper background */
+    background-color: #f4ead3;
+    background-image:
+      radial-gradient(circle at 22% 12%, #f9f1dd 0, transparent 45%),
+      radial-gradient(circle at 82% 58%, #efe2c4 0, transparent 42%),
+      radial-gradient(circle at 58% 92%, #f7eed9 0, transparent 52%);
+    background-attachment: fixed;
+  }
+
+  ::selection {
+    background: #e0a458;
+    color: #fbf6e9;
+  }
+}
+
+@layer components {
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 font-marker text-sm tracking-wide transition-colors;
+  }
+  .btn-primary {
+    @apply bg-ink text-cream hover:bg-ink/85;
+  }
+  .btn-ghost {
+    @apply bg-cream/80 text-ink ring-1 ring-ink/15 hover:bg-cream;
+  }
+
+  /* A photo print (polaroid) */
+  .polaroid {
+    @apply bg-cream p-2.5 pb-9 shadow-polaroid ring-1 ring-black/5;
+  }
+
+  /* A taped sticky note / card */
+  .note {
+    @apply rounded-md bg-cream p-5 shadow-note ring-1 ring-ink/10;
+  }
+
+  /* A strip of masking tape */
+  .tape {
+    @apply block h-6 w-24 rotate-[-3deg] bg-tape/85 shadow-sm;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  }
+
+  /* Section eyebrow label */
+  .eyebrow {
+    @apply font-type text-xs uppercase tracking-[0.25em] text-kraftdark;
+  }
+}
