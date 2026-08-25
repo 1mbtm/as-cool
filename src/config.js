@@ -13,6 +13,18 @@ export const SITE = {
   // 👇 Admin panel ka passcode (site pe events add karne ke liye).
   //    NOTE: yeh client-side hai — real security nahi, sirf casual gate hai.
   adminPasscode: "classof2026",
+
+  // 👇 Poll dekhne / vote karne ka password (/poll page ke liye).
+  //    Admin passcode bhi kaam karega. Yeh bhi sirf client-side gate hai.
+  pollPassword: "vote2026",
+
+  // 👇 /contact page ke social links — apne asli links yahan daal do
+  socials: {
+    github: "https://github.com/your-school",
+    instagram: "https://instagram.com/your-school",
+    snapchat: "https://snapchat.com/add/your-school",
+    website: "https://www.your-school.edu",
+  },
 };
 
 export default SITE;
