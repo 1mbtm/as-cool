@@ -1,14 +1,24 @@
 import { ReactLenis, useLenis } from "lenis/react";
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
 import AdminModal from "./components/AdminModal";
 import Home from "./pages/Home";
 import Contact from "./pages/Contact";
-import Selfies from "./pages/Selfies";
 import Poll from "./pages/Poll";
 import HorizontalScroll from "./pages/HorizontalScroll";
+
+// Selfies page Firebase khichta hai (bada) — isliye lazy, sirf visit pe load
+const SelfiesRoute = lazy(() => import("./pages/SelfiesRoute"));
+
+function PageLoading() {
+  return (
+    <main className="grid min-h-screen place-content-center bg-paper">
+      <p className="font-hand text-3xl text-ink/60">loading…</p>
+    </main>
+  );
+}
 
 // Route change pe upar scroll (hash ho to Home khud handle karega)
 function ScrollToTop() {
@@ -33,7 +43,14 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/students-selfies" element={<Selfies />} />
+        <Route
+          path="/students-selfies"
+          element={
+            <Suspense fallback={<PageLoading />}>
+              <SelfiesRoute />
+            </Suspense>
+          }
+        />
         <Route path="/poll" element={<Poll />} />
         <Route path="/horizontal-scroll" element={<HorizontalScroll />} />
         <Route path="*" element={<Home />} />
